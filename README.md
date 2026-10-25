@@ -6,14 +6,14 @@ Public CelesTrak Current Data (GP) snapshots for the ISSTracker Apple and Androi
 
 GitHub Actions runs every six hours at 00:23, 06:23, 12:23, and 18:23 UTC, or on manual dispatch. GitHub Pages publishes the generated JSON without committing orbital datasets into source history. Scheduling is best effort, not a freshness guarantee. Public scheduled workflows can be disabled by GitHub after 60 days without repository activity; maintainers must monitor the Actions page and re-enable them when necessary.
 
-Expected base URL: `https://neonindigo.github.io/satellite-catalog/`.
+Canonical base URL: `https://neonindigo.com/satellite-catalog/` (the organization's existing GitHub Pages custom domain).
 
 - `v1/manifest.json`: discovery timestamp, publication timestamp, completeness, per-group freshness and errors, content-addressed group/index paths, and upstream halt status.
 - `v1/iss.json`: small bootstrap record for ISS tracking before the catalog finishes downloading.
 - `v1/blobs/<sha256>.json`: immutable group snapshots and deduplicated search index. Group snapshots contain full OMM JSON rows. Index objects identify their group memberships and orbital-data endpoint.
 - `v1/objects/<NORAD>.json`: current orbital elements, last successful upstream fetch time, and group memberships for a single object.
 
-Clients fetch the manifest first, then its referenced index/groups. Group files become browseable independently; search must remain labeled incomplete until all required data has loaded and upstream coverage is complete. If a referenced blob is no longer available after a later deployment, refetch the manifest. The publisher retains blobs for 14 days, including all files referenced by its current manifest.
+Clients fetch the manifest first, then its referenced index/groups. Group files become browseable independently; search must remain labeled incomplete until all required data has loaded and upstream coverage is complete. If a referenced blob is no longer available after a later deployment, refetch the manifest. The publisher retains unreferenced blobs for 48 hours to bound publication size, and always retains all files referenced by its current manifest.
 
 All timestamps use UTC. `epoch` comes from the orbital elements, `fetchedAt` is the successful upstream download time, and `publishedAt` is the feed build time. **Publication or download never resets orbital age.** The app's 24-hour warning and 72-hour cutoff use the epoch. App Refresh downloads this feed and does not trigger an upstream workflow. Cache successful app downloads for offline use and retain them if GitHub fails.
 

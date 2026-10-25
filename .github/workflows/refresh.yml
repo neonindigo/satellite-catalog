@@ -46,7 +46,7 @@ jobs:
         id: refresh
         env:
           RESUME_UPSTREAM: ${{ inputs.resume_upstream || false }}
-          PREVIOUS_BASE: https://neonindigo.github.io/satellite-catalog/
+          PREVIOUS_BASE: https://neonindigo.com/satellite-catalog/
         run: |
           arguments=()
           if [ "$RESUME_UPSTREAM" = true ]; then

@@ -181,7 +181,7 @@ def build(state, output, now):
     # Never delete blobs referenced by the current manifest, even when their data is old.
     referenced = {manifest["indexPath"]} | {group["path"] for group in groups if "path" in group}
     for path in (output / "v1/blobs").glob("*.json"):
-        if path.relative_to(output).as_posix() not in referenced and datetime.fromtimestamp(path.stat().st_mtime, UTC) < now - timedelta(days=14):
+        if path.relative_to(output).as_posix() not in referenced and datetime.fromtimestamp(path.stat().st_mtime, UTC) < now - timedelta(days=2):
             path.unlink()
     (output / ".nojekyll").touch()
     (output / "index.html").write_text('<!doctype html><meta charset="utf-8"><title>Satellite catalog</title><h1>Satellite catalog</h1><p>Public CelesTrak Current Data cache.</p><a href="v1/manifest.json">JSON manifest</a>')
