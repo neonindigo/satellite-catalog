@@ -42,4 +42,4 @@ The first real fetch requires internet access to CelesTrak. Generated `state/` a
 
 Enable GitHub Pages with **GitHub Actions** as the build source. The workflow needs `pages:write` and `id-token:write` to deploy. Restrict the `github-pages` environment to the default branch. Run the workflow manually, then verify the public manifest and ISS record before configuring the apps to use the feed.
 
-Data source: [CelesTrak Current Data](https://celestrak.org/NORAD/elements/) and [GP format documentation](https://celestrak.org/NORAD/documentation/gp-data-formats.php). This is an independent cache, not an official CelesTrak service. No claim is made that fetching permission grants additional redistribution rights.
+Data source: [CelesTrak Current Data](https://celestrak.org/NORAD/elements/) and [GP format documentation](https://celestrak.org/NORAD/documentation/gp-data-formats.php). This is an independent cache, not an official CelesTrak service.

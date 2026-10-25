@@ -72,6 +72,17 @@ class PublisherTests(unittest.TestCase):
         self.assertIn("error", saved["groups"][0])
         self.assertTrue(all(group["fetchedAt"] == timestamp(NOW) for group in saved["groups"][1:]))
 
+    def test_http_halt_does_not_mark_previously_fresh_groups_stale(self):
+        saved = state()
+        saved["groups"][1]["fetchedAt"] = timestamp(NOW - timedelta(hours=1))
+        def fetch(url):
+            if "gp.php" not in url:
+                return HTML
+            raise HTTPError(url, 403, "Forbidden", {}, BytesIO())
+        refresh(saved, NOW, fetch, lambda _: None)
+        active = next(group for group in saved["groups"] if group["id"] == "active")
+        self.assertNotIn("error", active)
+
     def test_failed_discovery_does_not_remove_known_groups(self):
         saved = state()
         refresh(saved, NOW, lambda _: "<html>Changed layout</html>", lambda _: None)
