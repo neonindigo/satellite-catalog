@@ -124,7 +124,8 @@ def refresh(state, now, fetch=get_source, pause=time.sleep, resume=False):
                 group["error"] = f"Upstream HTTP {error.code}; requests halted"
                 state["halted"] = {"at": timestamp(now), "reason": group["error"]}
                 for remaining in state["groups"][index + 1:]:
-                    remaining["error"] = "Not refreshed: upstream requests halted"
+                    if not remaining.get("fetchedAt") or now - date(remaining["fetchedAt"]) >= INTERVAL:
+                        remaining["error"] = "Not refreshed: upstream requests halted"
                 break
             except (URLError, TimeoutError, ValueError, KeyError, TypeError) as error:
                 group["error"] = str(error)
