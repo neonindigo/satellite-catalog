@@ -44,6 +44,16 @@ class PublisherTests(unittest.TestCase):
             self.fail("Source must not be queried before refresh is due")
         refresh(state(age=1), NOW, fetch, lambda _: None)
 
+    def test_schedule_jitter_does_not_skip_a_six_hour_run(self):
+        saved = state(age=5.99)
+        calls = []
+        def fetch(url):
+            calls.append(url)
+            return HTML if "gp.php" not in url else json.dumps([ROW])
+        refresh(saved, NOW, fetch, lambda _: None)
+        self.assertEqual(len(calls), 6)
+        self.assertTrue(all(group["fetchedAt"] == timestamp(NOW) for group in saved["groups"]))
+
     def test_http_failure_halts_and_preserves_all_entries(self):
         saved = state()
         calls = []

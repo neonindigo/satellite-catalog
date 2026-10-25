@@ -16,6 +16,7 @@ from urllib.request import HTTPRedirectHandler, Request, build_opener, urlopen
 
 SOURCE = "https://celestrak.org/NORAD/elements/"
 INTERVAL = timedelta(hours=6)
+MIN_FETCH_INTERVAL = timedelta(hours=2)
 UTC = timezone.utc
 
 
@@ -101,7 +102,7 @@ def refresh(state, now, fetch=get_source, pause=time.sleep, resume=False):
     if state.get("halted"):
         return state
     try:
-        if not state.get("discoveredAt") or now - date(state["discoveredAt"]) >= INTERVAL:
+        if not state.get("discoveredAt") or now - date(state["discoveredAt"]) >= MIN_FETCH_INTERVAL:
             discovered = discover(fetch(SOURCE))
             previous = {group["id"]: group for group in state.get("groups", [])}
             if previous and len(discovered) < len(previous) * 0.8:
@@ -110,7 +111,7 @@ def refresh(state, now, fetch=get_source, pause=time.sleep, resume=False):
             state["discoveredAt"] = timestamp(now)
             state.pop("discoveryError", None)
         for index, group in enumerate(state.get("groups", [])):
-            if group.get("fetchedAt") and now - date(group["fetchedAt"]) < INTERVAL and not group.get("error"):
+            if group.get("fetchedAt") and now - date(group["fetchedAt"]) < MIN_FETCH_INTERVAL and not group.get("error"):
                 continue
             pause(2)
             try:
@@ -124,7 +125,7 @@ def refresh(state, now, fetch=get_source, pause=time.sleep, resume=False):
                 group["error"] = f"Upstream HTTP {error.code}; requests halted"
                 state["halted"] = {"at": timestamp(now), "reason": group["error"]}
                 for remaining in state["groups"][index + 1:]:
-                    if not remaining.get("fetchedAt") or now - date(remaining["fetchedAt"]) >= INTERVAL:
+                    if not remaining.get("fetchedAt") or now - date(remaining["fetchedAt"]) >= MIN_FETCH_INTERVAL:
                         remaining["error"] = "Not refreshed: upstream requests halted"
                 break
             except (URLError, TimeoutError, ValueError, KeyError, TypeError) as error:

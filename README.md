@@ -25,7 +25,7 @@ The publisher restores local state from Actions cache, falling back to the publi
 
 Requests run sequentially with a pause and without automatic HTTP redirects. In accordance with [CelesTrak's usage policy](https://celestrak.org/usage-policy.php), any non-200 response stops further upstream requests and stores a halt marker. Later scheduled runs do not query upstream while halted. Inspect the workflow logs, correct the cause, and dispatch **Refresh catalog** with `resume_upstream=true` to explicitly resume. Publication still preserves last successful data and marks incomplete coverage. Failures are reported in the workflow summary and run status after publication.
 
-The six-hour minimum is checked against saved source timestamps, including manual dispatches. There are no automatic retries within a run. Failed non-HTTP requests may be attempted on a later run. The previous Pages deployment remains live if publication itself fails.
+The schedule is every six hours. A two-hour minimum between successful upstream downloads also applies to manual dispatches and code-change runs, matching CelesTrak's update interval. This allows normal scheduler delays without accidentally skipping the next six-hour run. There are no automatic retries within a run. Failed non-HTTP requests may be attempted on a later run. The previous Pages deployment remains live if publication itself fails.
 
 ## Development
 
